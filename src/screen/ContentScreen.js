@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 import { Alert, SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native';
 
@@ -17,7 +17,11 @@ GoogleSignin.configure({
 export default function ContentScreen(props) {
 
     const [scrollY, setScrollY] = useState(0)
+    const paywallRef = useRef(null)
     const [userAgent, setUserAgent] = useState('')
+    const [showPaywall, setShowPaywall] = useState(true)
+    const [showContent, setShowContent] = useState(false);
+
 
     const { contentId, clientId, mode } = props?.route?.params
 
@@ -27,9 +31,23 @@ export default function ContentScreen(props) {
         getUserAgent()
     }, [])
 
+    useFocusEffect(
+        React.useCallback(() => {
+            return () => {
+                if (paywallRef.current) {
+                    console.warn('Exit');
+                    paywallRef.current.pageExit();
+                } else {
+                    console.warn('Not Exit');
+                }
+            };
+        }, [])
+    );
+
+
     async function getUserAgent() {
         let newUserAgent = await DeviceInfo.getUserAgent();
-     
+
         setUserAgent(newUserAgent)
     }
 
@@ -62,8 +80,24 @@ export default function ContentScreen(props) {
             } else {
                 // some other error happened
             }
-        }    
+        }
     };
+
+    async function onStatusChange(result) {
+        if (result?.successMessage == 'METERBANNER') {
+            setShowPaywall(true);
+            setShowContent(true);
+        }
+        else if (result?.successMessage == 'PAYWALL') {
+            setShowPaywall(true);
+            setShowContent(false);
+        }
+        else if (result?.successMessage == 'UNLOCK') {
+            setShowPaywall(false);
+            setShowContent(true);
+        }
+    }
+
 
     return (
         <SafeAreaView style={styles.container}>
@@ -72,16 +106,23 @@ export default function ContentScreen(props) {
             }}>
                 <Text>{text[0] + "\n\n" + text[0] + "\n\n" + text[0]}</Text>
             </ScrollView>
-            {userAgent &&
+            {userAgent && showPaywall &&
                 <PayWall
+                    ref={paywallRef}
                     clientId={clientId}
                     contentId={contentId}
                     environment={mode}
                     userAgent={userAgent}
                     conscentMessage={conscentMessage}
+                    onPaywallStatus={(result) => {
+                        onStatusChange(result)
+                    }}
+                    onErrorMessage={(error) => {
+                        console.log('Error', error)
+                    }}
                     navigation={props?.navigation}
                     scrollY={scrollY}
-                    goBack={()=>{
+                    goBack={() => {
                         goBack()
                     }} />
             }

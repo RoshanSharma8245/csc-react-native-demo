@@ -21,7 +21,10 @@ const App = props => {
       <Stack.Navigator initialRouteName="LoginScreen">
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="ContentScreen" component={ContentScreen} />
-        <Stack.Screen name="ConscentWebView" component={ConscentWebView} />      
+        <Stack.Screen name="ConscentWebView" component={ConscentWebView} 
+        options={{
+          headerShown: false
+        }}/>      
       </Stack.Navigator>
     </NavigationContainer>
 
