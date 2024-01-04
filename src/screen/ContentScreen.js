@@ -4,7 +4,7 @@ import { Alert, SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native'
 
 //PACKAGES
 import { useFocusEffect } from '@react-navigation/native';
-import PayWall from 'csc-react-native-sdk';
+import PayWall,{getEventsEnvDetails, pageExist} from 'csc-react-native-sdk';
 import DeviceInfo from "react-native-device-info";
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 
@@ -34,16 +34,21 @@ export default function ContentScreen(props) {
     useFocusEffect(
         React.useCallback(() => {
             return () => {
-                if (paywallRef.current) {
-                    console.warn('Exit');
-                    paywallRef.current.pageExit();
-                } else {
-                    console.warn('Not Exit');
-                }
+                // if (paywallRef.current) {
+                //     console.warn('Exit');
+                //     paywallRef.current.pageExit();
+                // } else {
+                //     console.warn('Not Exit');
+                // }
+                removePage()
             };
         }, [])
     );
 
+    async function removePage() {
+        const res = await pageExist(getEventsEnvDetails(mode), clientId, contentId)
+        console.log('Respones====>', JSON.stringify(res))
+    }
 
     async function getUserAgent() {
         let newUserAgent = await DeviceInfo.getUserAgent();
@@ -51,8 +56,9 @@ export default function ContentScreen(props) {
         setUserAgent(newUserAgent)
     }
 
-    const conscentMessage = (message) => {
+    const conscentMessage = async (message) => {
         if (message == 'GoogleLoginClick') {
+            await GoogleSignin.signOut()
             signIn()
         }
     }
@@ -101,9 +107,10 @@ export default function ContentScreen(props) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView onScroll={(e) => {
-                setScrollY(e.nativeEvent.contentOffset.y)
-            }}>
+            <ScrollView
+                onScroll={(e) => {
+                    setScrollY(e.nativeEvent.contentOffset.y)
+                }}>
                 <Text>{text[0] + "\n\n" + text[0] + "\n\n" + text[0]}</Text>
             </ScrollView>
             {userAgent && showPaywall &&
