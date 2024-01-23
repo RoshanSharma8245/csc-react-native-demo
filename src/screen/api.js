@@ -1,7 +1,7 @@
 import { getEnvDetails, getLoginChallengeId, getServiceEnvDetails } from 'csc-react-native-sdk';
 import base64 from 'react-native-base64'
 
-export const genrateTempToken = async (email, mode) => {
+export const generateTempToken = async (email, mode) => {
     // let base64 = require("base-64"); // install it before use from npm i base-64
 
     const username = "J1EFAQR-H0N4921-QCXKVNH-6W9ZYY9";

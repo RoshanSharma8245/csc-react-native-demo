@@ -7,7 +7,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import PayWall, { getEventsEnvDetails, pageExist, onTouchListener } from 'csc-react-native-sdk';
 import DeviceInfo from "react-native-device-info";
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
-import { autoLoginView, genrateTempToken } from './api';
+import { autoLoginView, generateTempToken } from './api';
 
 
 GoogleSignin.configure({
@@ -35,20 +35,16 @@ export default function ContentScreen(props) {
 
     useFocusEffect(
         React.useCallback(() => {
+            setShowPaywall(true);
             return () => {
-                // if (paywallRef.current) {
-                //     console.warn('Exit');
-                //     paywallRef.current.pageExit();
-                // } else {
-                //     console.warn('Not Exit');
-                // }
+
                 removePage()
             };
         }, [])
     );
 
     async function removePage() {
-        const res = await pageExist(getEventsEnvDetails(mode), clientId, contentId)
+        const res = await pageExist(getEventsEnvDetails(mode), clientId, contentId, scrollY)
         console.log('Respones====>', JSON.stringify(res))
     }
 
@@ -78,7 +74,7 @@ export default function ContentScreen(props) {
 
             console.log(email);
 
-            const data = await genrateTempToken(email, mode);
+            const data = await generateTempToken(email, mode);
             console.log(data);
             const tempToken = data?.tempAuthToken;
 
@@ -88,6 +84,7 @@ export default function ContentScreen(props) {
 
         } catch (error) {
             console.log('got error: ', error.message);
+            setShowPaywall(true);
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 // user cancelled the login flow
             } else if (error.code === statusCodes.IN_PROGRESS) {
@@ -143,6 +140,7 @@ export default function ContentScreen(props) {
                         console.log('Error', error)
                     }}
                     navigation={props?.navigation}
+                    currentStackName={'ContentScreen'}
                     scrollY={scrollY}
                     goBack={() => {
                         goBack()
