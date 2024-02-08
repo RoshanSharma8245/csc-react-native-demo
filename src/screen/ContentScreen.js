@@ -4,7 +4,7 @@ import { Alert, SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native'
 
 //PACKAGES
 import { useFocusEffect } from '@react-navigation/native';
-import PayWall, { getEventsEnvDetails, pageExist, onTouchListener } from 'csc-react-native-sdk';
+import PayWall, { getEventsEnvDetails, pageExist, onTouchListener, PopUp } from 'csc-react-native-sdk';
 import DeviceInfo from "react-native-device-info";
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 import { autoLoginView, generateTempToken } from './api';
@@ -50,7 +50,7 @@ export default function ContentScreen(props) {
 
     async function getUserAgent() {
         let newUserAgent = await DeviceInfo.getUserAgent();
-
+        console.log('newUserAgent  ', newUserAgent);
         setUserAgent(newUserAgent)
     }
 
@@ -122,7 +122,7 @@ export default function ContentScreen(props) {
                 }}>
                 {
                     showContent ?
-                        <Text>{premiumContent[0] + "\n\n" + text[0] + "\n\n" + text[0]}</Text> : <Text>{text[0] + "\n\n" + text[0] + "\n\n" + text[0]}</Text>
+                        <Text>{premiumContent[0] + "\n\n" + text[0] + "\n\n" + text[0] + "\n\n" + text[0] + "\n\n" + text[0] + "\n\n" + text[0] + "\n\n" + text[0] + "\n\n" + text[0] + "\n\n" + text[0] + "\n\n" + text[0] + "\n\n" + text[0]}</Text> : <Text>{text[0] + "\n\n" + text[0] + "\n\n" + text[0]}</Text>
                 }
             </ScrollView>
             {userAgent && showPaywall &&
@@ -146,6 +146,13 @@ export default function ContentScreen(props) {
                         goBack()
                     }} />
             }
+
+            <PopUp
+                environment={mode}
+                currentStackName={'Content'}
+                navigation={props?.navigation}
+                scrollY={scrollY}
+            />
 
         </SafeAreaView >
     )
