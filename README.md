@@ -33,7 +33,7 @@ const App = () => {
 
 
 - yourClientId : Pass your clientId received from Conscent.ai.
-- yourContentId : This will be your article or content id for which detail needs to be checked.
+- yourContentId : Unique id of each content
 - Mode can be set as :
   `STAGING`
   `SANDBOX`
@@ -170,7 +170,8 @@ implement onStatusChange method in your component
 - PAYWALL : when receiving it then lock content and show the paywall
 - UNLOCK : when receiving it then unlock content and don't show the paywall
 
-## Generate TempToken
+## Login Functionality
+### The client can use his Login System using this functionality:
 Generate token api is a post api which gets email,phone number as a body parameter and generates auto login token 
 - username : API Key gets from conscent dashboard
 - password : API Secret gets from conscent dashboard
@@ -263,7 +264,7 @@ export const autoLoginView = async (tempToken, clientId, email, phoneNumber, cur
 ~~~javascript
 import { userLogout, getEnvDetails } from 'csc-react-native-sdk';
 
-    // Call this method to logout from conscent
+    // Call this method to logout
     userLogout(getEnvDetails(mode))
 ~~~
 
