@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
-
+//https://fonts.gstatic.com/s/playfair/v2/0nkQC9D7PO4KhmUJ5_zTZ_4MYQXznAK-TUcZXKO3UMnW6VNpe4-SiiZ4b8h5G3GutPkUetgdoSMw5ifm.ttf
 import { StyleSheet, View, Text, KeyboardAvoidingView, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 
 //PACKAGES
 import SelectDropdown from 'react-native-select-dropdown';
 import { getEnvDetails, userLogout } from 'csc-react-native-sdk';
+import RNFetchBlob from 'rn-fetch-blob';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function LoginScreen(props) {
 
@@ -12,6 +14,44 @@ export default function LoginScreen(props) {
     const [contentId, setContentId] = useState('Client-Story-Id-2');
     const [mode, setMode] = useState('STAGING')
     const environment = ["STAGING", "SANDBOX", "LIVE"]
+
+    useEffect(() => {
+        // Load the custom font
+        Icon.loadFont();
+    }, []);
+
+    async function downloadAndSaveFont(fontUrl, savePath) {
+        try {
+            // Download the font file using rn-fetch-blob
+            const response = await RNFetchBlob.config({
+                fileCache: true,
+            }).fetch('GET', fontUrl);
+
+            // Move the font file to the desired location
+            await RNFetchBlob.fs.mv(response.path(), savePath);
+
+            // Return the path where the font file is saved
+            return savePath;
+        } catch (error) {
+            console.error('Error downloading or saving font file:', error);
+            throw error;
+        }
+    }
+
+    // Example usage:
+    const fontUrl = 'https://fonts.gstatic.com/s/playfair/v2/0nkQC9D7PO4KhmUJ5_zTZ_4MYQXznAK-TUcZXKO3UMnW6VNpe4-SiiZ4b8h5G3GutPkUetgdoSMw5ifm.ttf'; // Replace with the actual font URL
+    const savePath = `${RNFetchBlob.fs.dirs.DocumentDir}/playfair.ttf`; // Replace with the desired save path
+
+    downloadAndSaveFont(fontUrl, savePath)
+        .then(savedPath => {
+            // Print or use the saved font file path as needed
+            console.log('Font file saved at:', savedPath);
+        })
+        .catch(error => {
+            // Handle errors
+            console.error(error);
+        });
+
 
     return (
         <KeyboardAvoidingView
@@ -21,7 +61,7 @@ export default function LoginScreen(props) {
                 style={styles.logo}
                 source={require('../assets/conscent.png')}
             />
-            <Text style={styles.title}>Welcome to demo</Text>
+            <Text style={[styles.title, { fontFamily: 'playfair' }]}>Welcome to demo</Text>
             <View style={styles.inputView}>
                 <TextInput
                     style={styles.inputText}
@@ -67,7 +107,7 @@ export default function LoginScreen(props) {
 
 
             <TouchableOpacity
-                onPress={() => {                    
+                onPress={() => {
                     props.navigation.navigate('ContentScreen', {
                         contentId: contentId,
                         clientId: clientId,
